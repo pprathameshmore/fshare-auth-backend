@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/20504614-9a11-4935-b745-819fe49ec0c3/resourceGroups/Fshare-Backend/providers/Microsoft.Web/sites/fshare-auth",
+    "appService.deploySubpath": "."
+}
