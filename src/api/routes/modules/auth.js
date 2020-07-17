@@ -1,7 +1,6 @@
 const express = require("express");
 const passport = require("../../../configs/passport");
 const { callbackAuth } = require("../../controllers/auth");
-const AuthServices = require("../../../services/auth");
 const auth = express.Router();
 
 const io = require("../../../loaders/socket");

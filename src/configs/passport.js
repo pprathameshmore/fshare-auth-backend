@@ -23,7 +23,7 @@ passport.use(
     {
       clientID: config.PASSPORT.GOOGLE_CONSUMER_KEY,
       clientSecret: config.PASSPORT.GOOGLE_CONSUMER_SECRET,
-      callbackURL: `${config.HOSTNAME}:${config.PORT}/api/v1/auth/google/callback`,
+      callbackURL: `${config.HOSTNAME}/api/v1/auth/google/callback`,
     },
     authResponse
   )
