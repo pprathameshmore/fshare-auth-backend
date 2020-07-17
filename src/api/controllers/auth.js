@@ -10,5 +10,8 @@ exports.callbackAuth = async (req, res, next) => {
     sendToken,
   };
   io.in(req.session.socketId).emit("user", userDetail);
+  res.send(
+    "Authentication successful. Now you can close this windows, and go back to the app"
+  );
   res.end();
 };
