@@ -1,6 +1,6 @@
-# FShare - Files Service
+# FShare - User Authentication Service
 
-This service handles file operations.
+TThis service handles user authentication operations.
 
 ## API Documentation
 
