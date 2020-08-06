@@ -1,14 +1,20 @@
 const express = require("express");
 const passport = require("../../../configs/passport");
-const { callbackAuth } = require("../../controllers/auth");
+const {
+  callbackAuth,
+  signout,
+  sendAccessToken,
+} = require("../../controllers/auth");
+const { addSocketIdToSession } = require("../../middlewares/socket-id");
 const auth = express.Router();
 
-const io = require("../../../loaders/socket");
+auth.route("/token").post(sendAccessToken);
 
-const addSocketIdToSession = (req, res, next) => {
-  req.session.socketId = req.query.socketId;
-  next();
-};
+auth.route("/failed").get((req, res, next) => {
+  res.send("Something went wrong");
+});
+
+auth.route("/signout").delete(signout);
 
 auth
   .route("/google")
@@ -18,22 +24,9 @@ auth
   );
 auth
   .route("/google/callback")
-  .get(passport.authenticate("google", { failureRedirect: "/" }), callbackAuth);
-
-/* auth.route('/').post((req, res, next) => {
-    const {
-        email,
-        username,
-        token } = req.body;
-    const { isFound, sendToken, user } = AuthServices.googleAuthReactClient({
-        email: email,
-        googleToken: token,
-        username: username
-    });
-    res.status(200).json({
-        sendToken: sendToken,
-        user: user
-    });
-}); */
+  .get(
+    passport.authenticate("google", { failureRedirect: "/api/v1/auth/failed" }),
+    callbackAuth
+  );
 
 module.exports = auth;
