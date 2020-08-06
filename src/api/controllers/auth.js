@@ -19,6 +19,9 @@ const callbackAuth = async (req, res, next) => {
       accessToken,
     };
     io.in(req.session.socketId).emit("user", userDetails);
+    res.send(
+      "Authentication successful, Now you can close this tab and go back to the app"
+    );
   } catch (error) {
     console.log(error);
   }
