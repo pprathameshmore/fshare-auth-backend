@@ -102,3 +102,8 @@ dist
 
 # TernJS port file
 .tern-port
+.VSCodeCounter/results.txt
+.VSCodeCounter/results.csv
+.VSCodeCounter/details.md
+.VSCodeCounter/results.md
+.production.env
