@@ -19,9 +19,6 @@ const callbackAuth = async (req, res, next) => {
       accessToken,
     };
     io.in(req.session.socketId).emit("user", userDetails);
-    res
-      .status(200)
-      .json(response(200, "Authentication successful", userDetails));
   } catch (error) {
     console.log(error);
   }
@@ -32,8 +29,8 @@ const signout = async (req, res, next) => {
     const { refreshToken } = req.body;
     if (!refreshToken)
       return res
-        .status(404)
-        .json(response(404, "Refresh Token required", null));
+        .status(400)
+        .json(response(400, "Refresh Token required", null));
     const fields = { refreshToken: null };
     const condition = { refreshToken: refreshToken };
     const user = await User.update(fields, { where: condition });
@@ -41,7 +38,7 @@ const signout = async (req, res, next) => {
     if (user[0] === 0)
       return res
         .status(403)
-        .json(response(404, "User may already Sign out or token wrong", null));
+        .json(response(403, "User may already Sign out or token wrong", null));
     if (user)
       return res.status(200).json(response(200, "Sign out successful", null));
   } catch (error) {
@@ -54,19 +51,19 @@ const sendAccessToken = async (req, res, next) => {
     const { refreshToken } = req.body;
     if (!refreshToken)
       return res
-        .status(404)
-        .json(response(404, "Refresh token required", null));
+        .status(400)
+        .json(response(400, "Refresh token required", null));
 
     //Check token in database
     const condition = { refreshToken };
     const user = await UserServices.checkUser({ condition }).catch((error) =>
       console.error(error)
     );
-    if (!user) return res.status(403).json(response(403, "Unauthorized", null));
+    if (!user) return res.status(401).json(response(401, "Unauthorized", null));
     //Verify JWT
     const isValidToken = verifyToken(refreshToken);
     if (!isValidToken)
-      return res.status(403).json(response(403, "Unauthorized", null));
+      return res.status(401).json(response(401, "Unauthorized", null));
 
     const accessToken = generateAccessToken({ id: user.toJSON().id });
     return res
