@@ -1,9 +1,5 @@
+require("dotenv").config();
 process.env.NODE_ENV = process.env.NODE_ENV || "development";
-
-const dotenv = require("dotenv");
-
-dotenv.config();
-
 exports.config = {
   HOSTNAME: process.env.HOSTNAME,
   PORT: parseInt(process.env.PORT) || 4444,
@@ -15,7 +11,8 @@ exports.config = {
     DB_PORT: parseInt(process.env.DB_PORT),
   },
   API_PREFIX: process.env.API_PREFIX || "api",
-  JWT_KEY: process.env.JWT_KEY,
+  JWT_ACCESS_KEY_KEY: process.env.JWT_ACCESS_TOKEN_KEY,
+  JWT_REFRESH_KEY_KEY: process.env.JWT_REFRESH_TOKEN_KEY,
   JWT_EXPIRES: process.env.JWT_EXPIRES,
   PASSPORT: {
     GOOGLE_CONSUMER_KEY: process.env.GOOGLE_CONSUMER_KEY,

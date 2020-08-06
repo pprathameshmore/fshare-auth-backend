@@ -24,8 +24,13 @@ User.init(
         isEmail: true,
       },
     },
-    token: {
+    refreshToken: {
       type: Sequelize.STRING,
+    },
+    role: {
+      type: Sequelize.ENUM,
+      values: ["ADMIN", "USER"],
+      defaultValue: "USER",
     },
     createdAt: {
       type: Sequelize.DATE,

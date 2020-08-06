@@ -1,21 +1,45 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const User = require("../models/user");
+const UserServices = require("../services/user");
 const { config } = require("../configs/index");
+const { generateRefreshToken } = require("../helpers/jwt-token-generate");
+const { GeneralError } = require("../utils/errors");
 
 const authResponse = async (token, tokenSecret, profile, done) => {
-  const user = await User.findOne({
-    where: { email: profile.emails[0].value },
-  });
-  if (!user) {
-    const userCreated = await User.create({
-      email: profile.emails[0].value,
-      username: profile.displayName,
-      token: token,
-    }).catch((error) => done(error, null));
-    done(null, userCreated);
+  try {
+    const email = profile.emails[0].value;
+    const condition = { email };
+    const user = await UserServices.checkUser({ condition });
+    if (user === undefined || !user || user === null) {
+      const userCreated = await UserServices.createUser({
+        username: profile.displayName,
+        email: profile.emails[0].value,
+        refreshToken: null,
+      });
+      const { id } = userCreated.toJSON();
+      userCreated.refreshToken = generateRefreshToken({ id });
+      const updatedUser = await userCreated
+        .save()
+        .catch((error) => console.log(error));
+      done(null, updatedUser);
+    }
+    const { id, refreshToken } = user.toJSON();
+    if (!refreshToken || refreshToken === null) {
+      const generatedRefreshToken = generateRefreshToken({ id });
+      const fields = {
+        refreshToken: generatedRefreshToken,
+      };
+      const condition = { id: id };
+      const userUpdated = await UserServices.updateUser({
+        fields,
+        condition,
+      });
+      done(null, userUpdated);
+    }
+    done(null, user);
+  } catch (error) {
+    throw new GeneralError(error);
   }
-  done(null, user);
 };
 
 passport.use(
@@ -29,11 +53,11 @@ passport.use(
   )
 );
 
-passport.serializeUser(function (user, cb) {
+passport.serializeUser((user, cb) => {
   cb(null, user);
 });
 
-passport.deserializeUser(function (obj, cb) {
+passport.deserializeUser((obj, cb) => {
   cb(null, obj);
 });
 
