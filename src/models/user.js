@@ -27,10 +27,21 @@ User.init(
     refreshToken: {
       type: Sequelize.STRING,
     },
+    premium: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+      require: true,
+    },
     role: {
       type: Sequelize.ENUM,
       values: ["ADMIN", "USER"],
       defaultValue: "USER",
+    },
+    profilePhoto: {
+      type: Sequelize.STRING,
+      validate: {
+        isUrl: true,
+      },
     },
     createdAt: {
       type: Sequelize.DATE,
@@ -49,6 +60,6 @@ User.init(
 
 //User.hasMany(File);
 
-//User.sync({ force: true });
+User.sync({ force: true });
 
 module.exports = User;

@@ -5,17 +5,17 @@ const { GeneralError } = require("../utils/errors");
 class UserServices {
   async checkUser({ condition }) {
     try {
-      const user = await User.findOne({ where: condition });
-      return user;
+      return await User.findOne({ where: condition });
     } catch (error) {
       throw new GeneralError(error);
     }
   }
-  async createUser({ username, email, token }) {
+  async createUser({ username, email, profilePhoto, token }) {
     try {
       return await User.create({
         username,
         email,
+        profilePhoto,
         token,
       });
     } catch (error) {
@@ -35,6 +35,26 @@ class UserServices {
       console.log(error)
     );
     return user;
+  }
+
+  async getUserDetails(userId) {
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) return null;
+      const {
+        id,
+        username,
+        email,
+        premium,
+        profilePhoto,
+        role,
+        createdAt,
+      } = user.toJSON();
+      console.log(user.toJSON());
+      return { id, username, email, premium, profilePhoto, role, createdAt };
+    } catch (error) {
+      throw new GeneralError(error);
+    }
   }
 }
 module.exports = Container.get(UserServices);

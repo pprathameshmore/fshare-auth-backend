@@ -4,12 +4,9 @@ const { GeneralError } = require("../utils/errors");
 
 const generateAccessToken = (data) => {
   try {
-    const { id } = data;
-    const accessToken = jwt.sign(
-      { userId: id, createdAt: Date.now },
-      config.JWT_ACCESS_KEY_KEY,
-      { expiresIn: config.JWT_EXPIRES }
-    );
+    const accessToken = jwt.sign(data, config.JWT_ACCESS_KEY_KEY, {
+      expiresIn: config.JWT_EXPIRES,
+    });
     return accessToken;
   } catch (error) {
     throw new GeneralError(error);
@@ -31,9 +28,7 @@ const generateRefreshToken = (data) => {
 
 const verifyToken = (givenToken) => {
   try {
-    return jwt.verify(givenToken, config.JWT_REFRESH_KEY_KEY, {
-      complete: true,
-    });
+    return jwt.verify(givenToken, config.JWT_ACCESS_KEY_KEY);
   } catch (error) {
     return error;
   }

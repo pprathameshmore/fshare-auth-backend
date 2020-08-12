@@ -6,23 +6,24 @@ const { generateRefreshToken } = require("../helpers/jwt-token-generate");
 const { GeneralError } = require("../utils/errors");
 
 const authResponse = async (token, tokenSecret, profile, done) => {
-  try {
-    const email = profile.emails[0].value;
-    const condition = { email };
-    const user = await UserServices.checkUser({ condition });
-    if (user === undefined || !user || user === null) {
-      const userCreated = await UserServices.createUser({
-        username: profile.displayName,
-        email: profile.emails[0].value,
-        refreshToken: null,
-      });
-      const { id } = userCreated.toJSON();
-      userCreated.refreshToken = generateRefreshToken({ id });
-      const updatedUser = await userCreated
-        .save()
-        .catch((error) => console.log(error));
-      done(null, updatedUser);
-    }
+  const email = profile.emails[0].value;
+  const profilePhoto = profile.photos[0].value;
+  const condition = { email };
+  const user = await UserServices.checkUser({ condition });
+  if (user === undefined || !user || user === null) {
+    const userCreated = await UserServices.createUser({
+      username: profile.displayName,
+      email,
+      profilePhoto,
+      refreshToken: null,
+    });
+    const { id } = userCreated.toJSON();
+    userCreated.refreshToken = generateRefreshToken({ id });
+    const updatedUser = await userCreated
+      .save()
+      .catch((error) => console.log(error));
+    done(null, updatedUser);
+  } else {
     const { id, refreshToken } = user.toJSON();
     if (!refreshToken || refreshToken === null) {
       const generatedRefreshToken = generateRefreshToken({ id });
@@ -37,8 +38,6 @@ const authResponse = async (token, tokenSecret, profile, done) => {
       done(null, userUpdated);
     }
     done(null, user);
-  } catch (error) {
-    throw new GeneralError(error);
   }
 };
 

@@ -9,12 +9,28 @@ const { GeneralError } = require("../../utils/errors");
 
 const callbackAuth = async (req, res, next) => {
   try {
-    const { id, email, username, refreshToken } = req.user;
-    const accessToken = generateAccessToken({ id, email });
-    const userDetails = {
+    const {
       id,
       email,
       username,
+      premium,
+      role,
+      profilePhoto,
+      refreshToken,
+    } = req.user;
+    const accessToken = generateAccessToken({
+      userId: id,
+      username,
+      premium,
+      role,
+    });
+    const userDetails = {
+      id,
+      email,
+      premium,
+      role,
+      username,
+      profilePhoto,
       refreshToken,
       accessToken,
     };
@@ -65,10 +81,16 @@ const sendAccessToken = async (req, res, next) => {
     if (!user) return res.status(401).json(response(401, "Unauthorized", null));
     //Verify JWT
     const isValidToken = verifyToken(refreshToken);
-    if (!isValidToken)
+    if (!isValidToken) {
       return res.status(401).json(response(401, "Unauthorized", null));
-
-    const accessToken = generateAccessToken({ id: user.toJSON().id });
+    }
+    const { id, username, premium, role } = user.toJSON();
+    const accessToken = generateAccessToken({
+      userId: id,
+      username,
+      premium,
+      role,
+    });
     return res
       .status(200)
       .json(response(200, "Access token generated", accessToken));
