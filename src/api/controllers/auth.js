@@ -9,15 +9,8 @@ const { GeneralError } = require("../../utils/errors");
 
 const callbackAuth = async (req, res, next) => {
   try {
-    const {
-      id,
-      email,
-      username,
-      premium,
-      role,
-      profilePhoto,
-      refreshToken,
-    } = req.user;
+    const { id, email, username, premium, role, profilePhoto, refreshToken } =
+      req.user;
     const accessToken = generateAccessToken({
       userId: id,
       username,
@@ -35,6 +28,7 @@ const callbackAuth = async (req, res, next) => {
       accessToken,
     };
     io.in(req.session.socketId).emit("user", userDetails);
+    console.log(accessToken);
     res.send(
       "Authentication successful, Now you can close this tab and go back to the app"
     );
