@@ -27,8 +27,10 @@ const callbackAuth = async (req, res, next) => {
       refreshToken,
       accessToken,
     };
-    io.in(req.session.socketId).emit("user", userDetails);
-    console.log(accessToken);
+    const socket = JSON.parse(
+      req.sessionStore.sessions[Object.keys(req.sessionStore.sessions)[0]]
+    );
+    io.in(socket.socketId).emit("user", userDetails);
     res.send(
       "Authentication successful, Now you can close this tab and go back to the app"
     );
